@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5050:5000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=your_user
+      - DB_PASSWORD=your_password
+      - DB_NAME=language_learning
+    volumes:
+      - ./backend:/app           # Mount backend code
+      - /app/node_modules        # Avoid overwriting node_modules
+    command: ["npm", "run", "dev"] # Run nodemon
+    depends_on:
+      - postgres
+ 
+
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: language_learning
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
